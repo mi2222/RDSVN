@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>專案開發儀表板</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="側邊導覽">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <strong>DevBoard</strong>
+        </div>
+
+        <nav class="menu" aria-label="主要導覽">
+          <a class="menu-item is-active" href="#">
+            <span class="menu-item-title">專案</span>
+            <span class="menu-item-hint">12</span>
+          </a>
+          <a class="menu-item" href="#">
+            <span class="menu-item-title">任務</span>
+            <span class="menu-item-hint">27</span>
+          </a>
+          <a class="menu-item" href="#">
+            <span class="menu-item-title">設定</span>
+            <span class="menu-item-hint">•</span>
+          </a>
+        </nav>
+      </aside>
+
+      <main class="main-panel">
+        <header class="topbar">
+          <label class="search" for="global-search">
+            <span class="search-icon" aria-hidden="true">⌕</span>
+            <input
+              id="global-search"
+              type="search"
+              placeholder="搜尋專案、任務、分支或檔案..."
+              aria-label="全域搜尋"
+            />
+          </label>
+
+          <button class="cta" type="button">+ 新增任務</button>
+        </header>
+
+        <section class="workspace" aria-label="開發工作區">
+          <div class="workspace-head">
+            <h1>開發工作區</h1>
+            <p>快速掌握目前專案進度、任務優先級與系統狀態。</p>
+          </div>
+
+          <div class="stats-grid">
+            <article class="stat-card">
+              <p class="stat-label">進行中專案</p>
+              <p class="stat-value">06</p>
+              <p class="stat-meta">較上週 +2</p>
+            </article>
+            <article class="stat-card">
+              <p class="stat-label">今日完成任務</p>
+              <p class="stat-value">14</p>
+              <p class="stat-meta">達成率 87%</p>
+            </article>
+            <article class="stat-card">
+              <p class="stat-label">待處理缺陷</p>
+              <p class="stat-value">03</p>
+              <p class="stat-meta">高優先 1 項</p>
+            </article>
+          </div>
+
+          <div class="panel-grid">
+            <section class="panel" aria-label="近期任務">
+              <div class="panel-title-row">
+                <h2>近期任務</h2>
+                <a href="#" class="link">查看全部</a>
+              </div>
+              <ul class="task-list">
+                <li>
+                  <span>重構 API 驗證流程</span>
+                  <span class="badge high">High</span>
+                </li>
+                <li>
+                  <span>修正 Dashboard 圖表對齊</span>
+                  <span class="badge medium">Medium</span>
+                </li>
+                <li>
+                  <span>更新 CI 測試設定</span>
+                  <span class="badge low">Low</span>
+                </li>
+              </ul>
+            </section>
+
+            <section class="panel" aria-label="部署狀態">
+              <div class="panel-title-row">
+                <h2>部署狀態</h2>
+                <span class="status online">● 線上</span>
+              </div>
+              <div class="deploy-item">
+                <p>Production</p>
+                <p>v2.8.1 · 12 分鐘前</p>
+              </div>
+              <div class="deploy-item">
+                <p>Staging</p>
+                <p>v2.9.0-rc · 4 分鐘前</p>
+              </div>
+              <div class="deploy-item">
+                <p>Development</p>
+                <p>最新提交已同步</p>
+              </div>
+            </section>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
