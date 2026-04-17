@@ -3,52 +3,538 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>專案開發儀表板</title>
-    <link rel="stylesheet" href="styles.css" />
+    <title>開發儀表板 + 藍色小球遊戲</title>
+    <style>
+      :root {
+        --bg: #0f1115;
+        --panel: #171a21;
+        --panel-soft: #1f2430;
+        --text: #eef2ff;
+        --text-muted: #9aa3b2;
+        --primary: #6f8dff;
+        --primary-soft: rgba(111, 141, 255, 0.16);
+        --border: #2b3342;
+        --danger: #ff6a6a;
+        --success: #4dd88f;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Inter", "Noto Sans TC", "Segoe UI", sans-serif;
+        background: radial-gradient(circle at 20% 10%, #1a1f2b 0%, var(--bg) 42%);
+        color: var(--text);
+      }
+
+      .app-layout {
+        display: grid;
+        grid-template-columns: 240px 1fr;
+        min-height: 100vh;
+      }
+
+      .sidebar {
+        background: linear-gradient(180deg, #12161d 0%, #0f1218 100%);
+        border-right: 1px solid var(--border);
+        padding: 24px 18px;
+      }
+
+      .brand {
+        font-size: 1.25rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        margin-bottom: 28px;
+      }
+
+      .nav-menu {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .nav-btn {
+        color: var(--text-muted);
+        text-align: left;
+        border: 1px solid transparent;
+        background: transparent;
+        padding: 10px 12px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 0.96rem;
+        transition: background-color 0.2s ease, color 0.2s ease;
+      }
+
+      .nav-btn:hover,
+      .nav-btn:focus-visible {
+        color: var(--text);
+        background: #212836;
+        outline: none;
+      }
+
+      .nav-btn.active {
+        color: var(--text);
+        background: var(--primary-soft);
+        border: 1px solid rgba(111, 141, 255, 0.35);
+      }
+
+      .workspace {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .topbar {
+        padding: 22px 28px;
+        border-bottom: 1px solid var(--border);
+        background: rgba(10, 12, 16, 0.65);
+        backdrop-filter: blur(5px);
+      }
+
+      .search-wrap {
+        display: flex;
+        align-items: center;
+        max-width: 560px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 10px 14px;
+        gap: 10px;
+      }
+
+      .search-wrap input {
+        width: 100%;
+        border: none;
+        background: transparent;
+        color: var(--text);
+        font-size: 0.95rem;
+      }
+
+      .search-wrap input:focus {
+        outline: none;
+      }
+
+      .content {
+        padding: 28px;
+      }
+
+      .panel {
+        display: none;
+      }
+
+      .panel.active {
+        display: block;
+      }
+
+      .panel h1 {
+        margin: 0 0 10px;
+        font-size: 1.65rem;
+      }
+
+      .panel .desc {
+        margin: 0;
+        color: var(--text-muted);
+      }
+
+      .cards {
+        margin-top: 24px;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(170px, 1fr));
+        gap: 16px;
+      }
+
+      .card {
+        background: var(--panel-soft);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 18px;
+      }
+
+      .card h2 {
+        margin: 0 0 8px;
+        font-size: 1rem;
+      }
+
+      .card p {
+        margin: 0;
+        color: #b8c0cf;
+      }
+
+      .game-wrap {
+        margin-top: 24px;
+        display: grid;
+        grid-template-columns: 1fr 280px;
+        gap: 16px;
+      }
+
+      .game-board {
+        background: #111521;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 12px;
+      }
+
+      canvas {
+        width: 100%;
+        height: auto;
+        border-radius: 10px;
+        border: 1px solid #2e3750;
+        background: linear-gradient(180deg, #0a0f1b 0%, #101a2d 100%);
+      }
+
+      .game-info {
+        display: grid;
+        gap: 12px;
+      }
+
+      .stat {
+        padding: 14px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: var(--panel-soft);
+      }
+
+      .stat .label {
+        display: block;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+      }
+
+      .stat .value {
+        margin-top: 6px;
+        font-size: 1.35rem;
+        font-weight: 700;
+      }
+
+      .controls {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .controls button {
+        border: 1px solid var(--border);
+        background: #1d2640;
+        color: var(--text);
+        padding: 10px;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+
+      .controls button:hover {
+        background: #253258;
+      }
+
+      .tips {
+        margin-top: 4px;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+      }
+
+      .status {
+        font-weight: 700;
+      }
+
+      .status.win {
+        color: var(--success);
+      }
+
+      .status.lose {
+        color: var(--danger);
+      }
+
+      @media (max-width: 980px) {
+        .app-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .sidebar {
+          border-right: none;
+          border-bottom: 1px solid var(--border);
+        }
+
+        .nav-menu {
+          flex-direction: row;
+          flex-wrap: wrap;
+        }
+
+        .cards,
+        .game-wrap {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
   </head>
   <body>
     <div class="app-layout">
       <aside class="sidebar">
         <div class="brand">DevBoard</div>
         <nav class="nav-menu" aria-label="主要導覽">
-          <a class="nav-item active" href="#">專案</a>
-          <a class="nav-item" href="#">任務</a>
-          <a class="nav-item" href="#">設定</a>
+          <button class="nav-btn active" data-panel="dashboard">儀表板</button>
+          <button class="nav-btn" data-panel="game">藍色小球遊戲</button>
         </nav>
       </aside>
 
       <main class="workspace">
         <header class="topbar">
           <label class="search-wrap" for="search">
-            <span class="search-icon" aria-hidden="true">⌕</span>
+            <span aria-hidden="true">⌕</span>
             <input
               id="search"
               type="search"
-              placeholder="搜尋專案、任務或檔案..."
+              placeholder="搜尋專案、任務或指令..."
               aria-label="搜尋"
             />
           </label>
         </header>
 
-        <section class="content" aria-label="開發工作區">
-          <h1>開發工作區</h1>
-          <p>在這裡集中管理專案進度、追蹤任務狀態，並快速切換設定。</p>
-          <div class="cards">
-            <article class="card">
-              <h2>目前專案</h2>
-              <p>3 個進行中</p>
-            </article>
-            <article class="card">
-              <h2>待辦任務</h2>
-              <p>12 項待處理</p>
-            </article>
-            <article class="card">
-              <h2>系統狀態</h2>
-              <p>所有服務正常</p>
-            </article>
-          </div>
+        <section class="content" aria-label="內容區">
+          <section id="dashboard" class="panel active" aria-label="開發儀表板">
+            <h1>開發儀表板</h1>
+            <p class="desc">即時掌握專案狀態、任務進度與系統健康度。</p>
+            <div class="cards">
+              <article class="card">
+                <h2>目前專案</h2>
+                <p>3 個進行中</p>
+              </article>
+              <article class="card">
+                <h2>待辦任務</h2>
+                <p>12 項待處理</p>
+              </article>
+              <article class="card">
+                <h2>系統狀態</h2>
+                <p>所有服務正常</p>
+              </article>
+            </div>
+          </section>
+
+          <section id="game" class="panel" aria-label="藍色小球遊戲">
+            <h1>藍色小球遊戲</h1>
+            <p class="desc">用方向鍵或 WASD 控制藍色小球，閃開紅色障礙並吃到金色目標。</p>
+
+            <div class="game-wrap">
+              <div class="game-board">
+                <canvas id="gameCanvas" width="760" height="420" aria-label="遊戲畫布"></canvas>
+              </div>
+
+              <aside class="game-info">
+                <div class="stat">
+                  <span class="label">分數</span>
+                  <div id="score" class="value">0</div>
+                </div>
+                <div class="stat">
+                  <span class="label">剩餘時間</span>
+                  <div id="time" class="value">60</div>
+                </div>
+                <div class="stat">
+                  <span class="label">狀態</span>
+                  <div id="status" class="value status">準備開始</div>
+                </div>
+                <div class="controls">
+                  <button id="startBtn" type="button">開始</button>
+                  <button id="resetBtn" type="button">重置</button>
+                </div>
+                <p class="tips">每吃到一個金色目標 +10 分；撞到障礙物會 -5 分並反彈。</p>
+              </aside>
+            </div>
+          </section>
         </section>
       </main>
     </div>
+
+    <script>
+      const navButtons = document.querySelectorAll('.nav-btn');
+      const panels = document.querySelectorAll('.panel');
+
+      navButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          navButtons.forEach((b) => b.classList.remove('active'));
+          panels.forEach((panel) => panel.classList.remove('active'));
+
+          btn.classList.add('active');
+          const target = document.getElementById(btn.dataset.panel);
+          if (target) target.classList.add('active');
+        });
+      });
+
+      const canvas = document.getElementById('gameCanvas');
+      const ctx = canvas.getContext('2d');
+      const scoreEl = document.getElementById('score');
+      const timeEl = document.getElementById('time');
+      const statusEl = document.getElementById('status');
+      const startBtn = document.getElementById('startBtn');
+      const resetBtn = document.getElementById('resetBtn');
+
+      const player = {
+        x: 90,
+        y: 210,
+        radius: 16,
+        speed: 4,
+        color: '#3b82f6',
+      };
+
+      const target = { x: 650, y: 80, radius: 12, color: '#ffd166' };
+
+      const obstacles = [
+        { x: 190, y: 70, w: 20, h: 290 },
+        { x: 340, y: 20, w: 20, h: 230 },
+        { x: 500, y: 150, w: 20, h: 250 },
+        { x: 610, y: 0, w: 20, h: 210 },
+      ];
+
+      const keys = new Set();
+      let score = 0;
+      let timeLeft = 60;
+      let running = false;
+      let timer = null;
+      let anim = null;
+
+      function randomizeTarget() {
+        const margin = 30;
+        let valid = false;
+
+        while (!valid) {
+          target.x = Math.floor(Math.random() * (canvas.width - margin * 2)) + margin;
+          target.y = Math.floor(Math.random() * (canvas.height - margin * 2)) + margin;
+
+          valid = !obstacles.some(
+            (ob) =>
+              target.x > ob.x - target.radius &&
+              target.x < ob.x + ob.w + target.radius &&
+              target.y > ob.y - target.radius &&
+              target.y < ob.y + ob.h + target.radius
+          );
+        }
+      }
+
+      function setStatus(text, type = '') {
+        statusEl.textContent = text;
+        statusEl.className = `value status ${type}`.trim();
+      }
+
+      function resetPlayer() {
+        player.x = 90;
+        player.y = 210;
+      }
+
+      function drawCircle(x, y, radius, color) {
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fillStyle = color;
+        ctx.fill();
+      }
+
+      function drawObstacles() {
+        ctx.fillStyle = '#ff6a6a';
+        obstacles.forEach((ob) => ctx.fillRect(ob.x, ob.y, ob.w, ob.h));
+      }
+
+      function circleRectCollision(circle, rect) {
+        const closestX = Math.max(rect.x, Math.min(circle.x, rect.x + rect.w));
+        const closestY = Math.max(rect.y, Math.min(circle.y, rect.y + rect.h));
+        const dx = circle.x - closestX;
+        const dy = circle.y - closestY;
+        return dx * dx + dy * dy < circle.radius * circle.radius;
+      }
+
+      function update() {
+        if (!running) return;
+
+        if (keys.has('arrowup') || keys.has('w')) player.y -= player.speed;
+        if (keys.has('arrowdown') || keys.has('s')) player.y += player.speed;
+        if (keys.has('arrowleft') || keys.has('a')) player.x -= player.speed;
+        if (keys.has('arrowright') || keys.has('d')) player.x += player.speed;
+
+        player.x = Math.max(player.radius, Math.min(canvas.width - player.radius, player.x));
+        player.y = Math.max(player.radius, Math.min(canvas.height - player.radius, player.y));
+
+        const hitObstacle = obstacles.some((ob) => circleRectCollision(player, ob));
+        if (hitObstacle) {
+          score = Math.max(0, score - 5);
+          scoreEl.textContent = score;
+          resetPlayer();
+        }
+
+        const dx = player.x - target.x;
+        const dy = player.y - target.y;
+        const distance = Math.hypot(dx, dy);
+
+        if (distance < player.radius + target.radius) {
+          score += 10;
+          scoreEl.textContent = score;
+          randomizeTarget();
+        }
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawObstacles();
+        drawCircle(target.x, target.y, target.radius, target.color);
+        drawCircle(player.x, player.y, player.radius, player.color);
+      }
+
+      function gameLoop() {
+        update();
+        draw();
+        anim = requestAnimationFrame(gameLoop);
+      }
+
+      function stopGame(message, type = '') {
+        running = false;
+        clearInterval(timer);
+        timer = null;
+        cancelAnimationFrame(anim);
+        anim = null;
+        setStatus(message, type);
+      }
+
+      function startGame() {
+        if (running) return;
+        if (timeLeft <= 0) {
+          timeLeft = 60;
+          score = 0;
+          scoreEl.textContent = score;
+          timeEl.textContent = timeLeft;
+        }
+
+        running = true;
+        setStatus('遊戲中');
+        timer = setInterval(() => {
+          timeLeft -= 1;
+          timeEl.textContent = timeLeft;
+
+          if (timeLeft <= 0) {
+            stopGame(score >= 80 ? '過關成功！' : '時間到，繼續挑戰！', score >= 80 ? 'win' : 'lose');
+          }
+        }, 1000);
+
+        gameLoop();
+      }
+
+      function resetGame() {
+        stopGame('準備開始');
+        score = 0;
+        timeLeft = 60;
+        scoreEl.textContent = score;
+        timeEl.textContent = timeLeft;
+        resetPlayer();
+        randomizeTarget();
+        draw();
+      }
+
+      window.addEventListener('keydown', (event) => {
+        keys.add(event.key.toLowerCase());
+      });
+
+      window.addEventListener('keyup', (event) => {
+        keys.delete(event.key.toLowerCase());
+      });
+
+      startBtn.addEventListener('click', startGame);
+      resetBtn.addEventListener('click', resetGame);
+
+      draw();
+    </script>
   </body>
 </html>
