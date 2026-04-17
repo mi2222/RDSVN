@@ -232,6 +232,99 @@
         font-size: 0.9rem;
       }
 
+      .lead-tools {
+        margin-top: 22px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .lead-tools input {
+        flex: 1 1 300px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: var(--panel);
+        color: var(--text);
+        padding: 10px 12px;
+        font-size: 0.95rem;
+      }
+
+      .lead-tools input:focus {
+        outline: 1px solid rgba(111, 141, 255, 0.5);
+      }
+
+      .btn-primary,
+      .btn-secondary {
+        border: 1px solid transparent;
+        color: var(--text);
+        border-radius: 10px;
+        padding: 10px 14px;
+        cursor: pointer;
+        font-size: 0.92rem;
+      }
+
+      .btn-primary {
+        background: #2f4fd6;
+        border-color: rgba(111, 141, 255, 0.35);
+      }
+
+      .btn-primary:hover {
+        background: #3e61ef;
+      }
+
+      .btn-secondary {
+        background: #1f2a44;
+        border-color: var(--border);
+      }
+
+      .btn-secondary:hover {
+        background: #29395f;
+      }
+
+      .table-wrap {
+        margin-top: 16px;
+        overflow-x: auto;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: var(--panel-soft);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 720px;
+      }
+
+      th,
+      td {
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--border);
+        text-align: left;
+        font-size: 0.92rem;
+      }
+
+      th {
+        background: #1b2231;
+        color: #ced7ea;
+        font-weight: 600;
+      }
+
+      td a {
+        color: #9fc2ff;
+      }
+
+      .lead-meta {
+        margin-top: 10px;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+      }
+
+      .empty-row {
+        text-align: center;
+        color: var(--text-muted);
+      }
+
       .status {
         font-weight: 700;
       }
@@ -273,6 +366,7 @@
         <nav class="nav-menu" aria-label="主要導覽">
           <button class="nav-btn active" data-panel="dashboard">儀表板</button>
           <button class="nav-btn" data-panel="game">藍色小球遊戲</button>
+          <button class="nav-btn" data-panel="lead-generator">客群精準開發 (Lead Generator)</button>
         </nav>
       </aside>
 
@@ -339,6 +433,42 @@
               </aside>
             </div>
           </section>
+
+          <section id="lead-generator" class="panel" aria-label="客群精準開發">
+            <h1>客群精準開發 (Lead Generator)</h1>
+            <p class="desc">輸入產品名稱並模擬搜尋具備有效聯絡信箱的潛在客群名單。</p>
+
+            <div class="lead-tools">
+              <input
+                id="leadKeyword"
+                type="text"
+                placeholder="請輸入產品名稱（例如：滾珠開關）"
+                aria-label="產品名稱"
+              />
+              <button id="leadSearchBtn" class="btn-primary" type="button">開始搜尋</button>
+              <button id="exportCsvBtn" class="btn-secondary" type="button" disabled>匯出 CSV</button>
+            </div>
+
+            <p id="leadMeta" class="lead-meta">尚未搜尋。</p>
+
+            <div class="table-wrap">
+              <table aria-label="潛在客群結果表">
+                <thead>
+                  <tr>
+                    <th>廠商名稱</th>
+                    <th>應用場景</th>
+                    <th>官方網站</th>
+                    <th>聯絡 Mail</th>
+                  </tr>
+                </thead>
+                <tbody id="leadTableBody">
+                  <tr>
+                    <td class="empty-row" colspan="4">請輸入產品名稱後點擊「開始搜尋」。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
         </section>
       </main>
     </div>
@@ -365,6 +495,52 @@
       const statusEl = document.getElementById('status');
       const startBtn = document.getElementById('startBtn');
       const resetBtn = document.getElementById('resetBtn');
+      const leadKeywordInput = document.getElementById('leadKeyword');
+      const leadSearchBtn = document.getElementById('leadSearchBtn');
+      const exportCsvBtn = document.getElementById('exportCsvBtn');
+      const leadTableBody = document.getElementById('leadTableBody');
+      const leadMeta = document.getElementById('leadMeta');
+
+      const leadDataPool = [
+        {
+          companyName: 'SecureGuard 防盜科技',
+          application: '智慧防盜器震動觸發模組',
+          website: 'https://www.secureguard-example.com',
+          email: 'sales@secureguard-example.com',
+        },
+        {
+          companyName: 'MotionFit Wearables',
+          application: '穿戴式裝置按鍵/觸發感測模組',
+          website: 'https://www.motionfit-example.com',
+          email: 'bizdev@motionfit-example.com',
+        },
+        {
+          companyName: 'PowerRide Sports',
+          application: '健身車與運動器材控制面板',
+          website: 'https://www.powerride-example.com',
+          email: 'contact@powerride-example.com',
+        },
+        {
+          companyName: 'HomeAuto Integrations',
+          application: '智慧家電控制模組',
+          website: 'https://www.homeauto-example.com',
+          email: '',
+        },
+        {
+          companyName: 'AeroSwitch Components',
+          application: '工業設備微動開關整合',
+          website: 'https://www.aeroswitch-example.com',
+          email: 'info@aeroswitch-example.com',
+        },
+        {
+          companyName: 'Urban Mobility Lab',
+          application: '電動滑板車控制系統',
+          website: 'https://www.urbanmobility-example.com',
+          email: 'support@urbanmobility-example',
+        },
+      ];
+
+      let currentLeadResults = [];
 
       const player = {
         x: 90,
@@ -523,6 +699,98 @@
         draw();
       }
 
+      function isValidEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      }
+
+      function escapeCSV(value) {
+        const safe = String(value ?? '').replace(/"/g, '""');
+        return `"${safe}"`;
+      }
+
+      function buildLeadRows(rows) {
+        if (!rows.length) {
+          leadTableBody.innerHTML = `
+            <tr>
+              <td class="empty-row" colspan="4">沒有符合條件（含有效電子郵件）的客群資料。</td>
+            </tr>
+          `;
+          return;
+        }
+
+        leadTableBody.innerHTML = rows
+          .map(
+            (item) => `
+            <tr>
+              <td>${item.companyName}</td>
+              <td>${item.application}</td>
+              <td><a href="${item.website}" target="_blank" rel="noopener noreferrer">${item.website}</a></td>
+              <td>${item.email}</td>
+            </tr>
+          `
+          )
+          .join('');
+      }
+
+      function simulateLeadSearch(keyword) {
+        const normalized = keyword.trim().toLowerCase();
+
+        const scored = leadDataPool.map((lead) => {
+          const haystack = `${lead.companyName} ${lead.application}`.toLowerCase();
+          let score = 0;
+          if (normalized) {
+            if (haystack.includes(normalized)) score += 3;
+            if (normalized.includes('開關') && lead.application.includes('開關')) score += 2;
+            if (normalized.includes('穿戴') && lead.application.includes('穿戴')) score += 2;
+            if (normalized.includes('運動') && lead.application.includes('運動')) score += 2;
+            if (normalized.includes('防盜') && lead.application.includes('防盜')) score += 2;
+          }
+          return { ...lead, score };
+        });
+
+        const withValidEmail = scored.filter((lead) => isValidEmail(lead.email));
+        const prioritized = withValidEmail.sort((a, b) => b.score - a.score);
+
+        return normalized ? prioritized.slice(0, 5) : prioritized;
+      }
+
+      function onLeadSearch() {
+        const keyword = leadKeywordInput.value.trim();
+        if (!keyword) {
+          leadMeta.textContent = '請先輸入產品名稱後再搜尋。';
+          currentLeadResults = [];
+          exportCsvBtn.disabled = true;
+          buildLeadRows([]);
+          return;
+        }
+
+        currentLeadResults = simulateLeadSearch(keyword);
+        buildLeadRows(currentLeadResults);
+        exportCsvBtn.disabled = currentLeadResults.length === 0;
+        leadMeta.textContent = `關鍵字「${keyword}」搜尋完成，共 ${currentLeadResults.length} 筆（已過濾無效 Mail）。`;
+      }
+
+      function onExportCSV() {
+        if (!currentLeadResults.length) return;
+        const header = ['廠商名稱', '應用場景', '官方網站', '聯絡 Mail'];
+        const rows = currentLeadResults.map((item) => [
+          item.companyName,
+          item.application,
+          item.website,
+          item.email,
+        ]);
+        const csv = [header, ...rows].map((row) => row.map(escapeCSV).join(',')).join('\n');
+        const blob = new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'lead-generator-results.csv';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }
+
       window.addEventListener('keydown', (event) => {
         keys.add(event.key.toLowerCase());
       });
@@ -533,6 +801,11 @@
 
       startBtn.addEventListener('click', startGame);
       resetBtn.addEventListener('click', resetGame);
+      leadSearchBtn.addEventListener('click', onLeadSearch);
+      exportCsvBtn.addEventListener('click', onExportCSV);
+      leadKeywordInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') onLeadSearch();
+      });
 
       draw();
     </script>
