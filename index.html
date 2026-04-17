@@ -320,6 +320,25 @@
         font-size: 0.9rem;
       }
 
+      .verified-mail {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .mail-verified-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.78rem;
+        color: #9df5bf;
+        background: rgba(77, 216, 143, 0.18);
+        border: 1px solid rgba(77, 216, 143, 0.45);
+        border-radius: 999px;
+        padding: 1px 7px;
+        white-space: nowrap;
+      }
+
       .empty-row {
         text-align: center;
         color: var(--text-muted);
@@ -456,6 +475,7 @@
                 <thead>
                   <tr>
                     <th>廠商名稱</th>
+                    <th>產業類別</th>
                     <th>應用場景</th>
                     <th>官方網站</th>
                     <th>聯絡 Mail</th>
@@ -463,7 +483,7 @@
                 </thead>
                 <tbody id="leadTableBody">
                   <tr>
-                    <td class="empty-row" colspan="4">請輸入產品名稱後點擊「開始搜尋」。</td>
+                    <td class="empty-row" colspan="5">請輸入產品名稱後點擊「開始搜尋」。</td>
                   </tr>
                 </tbody>
               </table>
@@ -501,44 +521,93 @@
       const leadTableBody = document.getElementById('leadTableBody');
       const leadMeta = document.getElementById('leadMeta');
 
-      const leadDataPool = [
-        {
-          companyName: 'SecureGuard 防盜科技',
-          application: '智慧防盜器震動觸發模組',
-          website: 'https://www.secureguard-example.com',
-          email: 'sales@secureguard-example.com',
+      const INDUSTRY_DATABASE = {
+        '工業感測器與自動化': {
+          keywords: ['感測器', 'sensor', '壓力', '溫度', '接近', 'proximity', '自動化', '工控', 'plc'],
+          leads: [
+            {
+              companyName: 'Omron Industrial Automation',
+              industryCategory: '工業感測器與自動化',
+              application: '光電與接近感測器、工業自動化控制',
+              website: 'https://www.ia.omron.com',
+              email: 'info@omron.com',
+            },
+            {
+              companyName: 'SICK Sensor Intelligence',
+              industryCategory: '工業感測器與自動化',
+              application: '雷射位移、編碼器與機器視覺感測系統',
+              website: 'https://www.sick.com',
+              email: 'sales@sick.com',
+            },
+            {
+              companyName: 'Honeywell Sensing Solutions',
+              industryCategory: '工業感測器與自動化',
+              application: '壓力、溫度與流量感測元件',
+              website: 'https://sps.honeywell.com',
+              email: 'contact@honeywell.com',
+            },
+          ],
         },
-        {
-          companyName: 'MotionFit Wearables',
-          application: '穿戴式裝置按鍵/觸發感測模組',
-          website: 'https://www.motionfit-example.com',
-          email: 'bizdev@motionfit-example.com',
+        '開關與人機介面元件': {
+          keywords: ['開關', 'switch', '按鍵', '微動', 'toggle', '按鈕', 'hmi', 'keyboard'],
+          leads: [
+            {
+              companyName: 'ALPS ALPINE',
+              industryCategory: '開關與人機介面元件',
+              application: '檢知開關、觸控與人機輸入元件',
+              website: 'https://www.alpsalpine.com',
+              email: 'support@alpsalpine.com',
+            },
+            {
+              companyName: 'C&K Switches (Littelfuse)',
+              industryCategory: '開關與人機介面元件',
+              application: '微動、滑動、搖頭與按鍵開關',
+              website: 'https://www.ckswitches.com',
+              email: 'sales@ckswitches.com',
+            },
+            {
+              companyName: 'Schneider Electric',
+              industryCategory: '開關與人機介面元件',
+              application: '工業控制開關與控制面板元件',
+              website: 'https://www.se.com',
+              email: 'contact@se.com',
+            },
+          ],
         },
-        {
-          companyName: 'PowerRide Sports',
-          application: '健身車與運動器材控制面板',
-          website: 'https://www.powerride-example.com',
-          email: 'contact@powerride-example.com',
+        '電子零件與被動元件': {
+          keywords: ['電子零件', '元件', '被動元件', '電阻', '電容', 'inductor', 'connector', '半導體'],
+          leads: [
+            {
+              companyName: 'Murata Manufacturing',
+              industryCategory: '電子零件與被動元件',
+              application: 'MLCC、多層電感與 RF 被動元件',
+              website: 'https://www.murata.com',
+              email: 'marketing@murata.com',
+            },
+            {
+              companyName: 'TDK Corporation',
+              industryCategory: '電子零件與被動元件',
+              application: '磁性元件、感測器與電源解決方案',
+              website: 'https://www.tdk.com',
+              email: 'contact@tdk.com',
+            },
+            {
+              companyName: 'TE Connectivity',
+              industryCategory: '電子零件與被動元件',
+              application: '連接器、繼電器與工業電子模組',
+              website: 'https://www.te.com',
+              email: 'support@te.com',
+            },
+            {
+              companyName: 'Vishay Intertechnology',
+              industryCategory: '電子零件與被動元件',
+              application: '二極體、MOSFET、電阻與光電元件',
+              website: 'https://www.vishay.com',
+              email: 'info@vishay.com',
+            },
+          ],
         },
-        {
-          companyName: 'HomeAuto Integrations',
-          application: '智慧家電控制模組',
-          website: 'https://www.homeauto-example.com',
-          email: '',
-        },
-        {
-          companyName: 'AeroSwitch Components',
-          application: '工業設備微動開關整合',
-          website: 'https://www.aeroswitch-example.com',
-          email: 'info@aeroswitch-example.com',
-        },
-        {
-          companyName: 'Urban Mobility Lab',
-          application: '電動滑板車控制系統',
-          website: 'https://www.urbanmobility-example.com',
-          email: 'support@urbanmobility-example',
-        },
-      ];
+      };
 
       let currentLeadResults = [];
 
@@ -712,7 +781,7 @@
         if (!rows.length) {
           leadTableBody.innerHTML = `
             <tr>
-              <td class="empty-row" colspan="4">沒有符合條件（含有效電子郵件）的客群資料。</td>
+              <td class="empty-row" colspan="5">沒有符合條件（含有效電子郵件）的客群資料。</td>
             </tr>
           `;
           return;
@@ -723,38 +792,78 @@
             (item) => `
             <tr>
               <td>${item.companyName}</td>
+              <td>${item.industryCategory}</td>
               <td>${item.application}</td>
               <td><a href="${item.website}" target="_blank" rel="noopener noreferrer">${item.website}</a></td>
-              <td>${item.email}</td>
+              <td>
+                <span class="verified-mail">
+                  ${item.email}
+                  <span class="mail-verified-badge" aria-label="已驗證有效">✅ 已驗證有效</span>
+                </span>
+              </td>
             </tr>
           `
           )
           .join('');
       }
 
-      function simulateLeadSearch(keyword) {
-        const normalized = keyword.trim().toLowerCase();
+      function normalizeText(value) {
+        return value.trim().toLowerCase();
+      }
 
-        const scored = leadDataPool.map((lead) => {
-          const haystack = `${lead.companyName} ${lead.application}`.toLowerCase();
-          let score = 0;
-          if (normalized) {
-            if (haystack.includes(normalized)) score += 3;
-            if (normalized.includes('開關') && lead.application.includes('開關')) score += 2;
-            if (normalized.includes('穿戴') && lead.application.includes('穿戴')) score += 2;
-            if (normalized.includes('運動') && lead.application.includes('運動')) score += 2;
-            if (normalized.includes('防盜') && lead.application.includes('防盜')) score += 2;
-          }
+      function matchIndustryCategories(keyword) {
+        const normalized = normalizeText(keyword);
+        return Object.entries(INDUSTRY_DATABASE)
+          .filter(([, config]) => config.keywords.some((term) => normalized.includes(term.toLowerCase())))
+          .map(([category]) => category);
+      }
+
+      async function fetchLeadsFromAPI(keyword, matchedCategories = []) {
+        const apiConfig = {
+          provider: 'local-mock', // 未來可改成: google-search / hunter-io
+          googleApiKey: '', // TODO: 填入 Google Search API Key
+          googleCseId: '', // TODO: 填入 Google CSE ID
+          hunterApiKey: '', // TODO: 填入 Hunter.io API Key
+        };
+
+        // 預留對外 API 串接流程：
+        // 1) 依 apiConfig.provider 選擇 Google Search API / Hunter.io API
+        // 2) 傳入 keyword + matchedCategories 作為 query
+        // 3) 將結果正規化成 { companyName, industryCategory, application, website, email }
+        // 目前以本機資料庫模擬回傳
+        const simulatedRows = Object.values(INDUSTRY_DATABASE).flatMap((group) => group.leads);
+
+        if (apiConfig.provider === 'local-mock') {
+          return Promise.resolve(simulatedRows);
+        }
+
+        return Promise.resolve([]);
+      }
+
+      async function simulateLeadSearch(keyword) {
+        const normalized = normalizeText(keyword);
+        const matchedCategories = matchIndustryCategories(normalized);
+        const apiRows = await fetchLeadsFromAPI(normalized, matchedCategories);
+
+        const scopedRows = matchedCategories.length
+          ? apiRows.filter((lead) => matchedCategories.includes(lead.industryCategory))
+          : apiRows;
+
+        const scored = scopedRows.map((lead) => {
+          const haystack = `${lead.companyName} ${lead.application} ${lead.industryCategory}`.toLowerCase();
+          const score =
+            (haystack.includes(normalized) ? 3 : 0) +
+            matchedCategories.filter((category) => lead.industryCategory === category).length * 2;
           return { ...lead, score };
         });
 
-        const withValidEmail = scored.filter((lead) => isValidEmail(lead.email));
-        const prioritized = withValidEmail.sort((a, b) => b.score - a.score);
-
-        return normalized ? prioritized.slice(0, 5) : prioritized;
+        return scored
+          .filter((lead) => isValidEmail(lead.email))
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 8);
       }
 
-      function onLeadSearch() {
+      async function onLeadSearch() {
         const keyword = leadKeywordInput.value.trim();
         if (!keyword) {
           leadMeta.textContent = '請先輸入產品名稱後再搜尋。';
@@ -764,17 +873,21 @@
           return;
         }
 
-        currentLeadResults = simulateLeadSearch(keyword);
+        const matchedCategories = matchIndustryCategories(keyword);
+        currentLeadResults = await simulateLeadSearch(keyword);
         buildLeadRows(currentLeadResults);
         exportCsvBtn.disabled = currentLeadResults.length === 0;
-        leadMeta.textContent = `關鍵字「${keyword}」搜尋完成，共 ${currentLeadResults.length} 筆（已過濾無效 Mail）。`;
+        leadMeta.textContent = `關鍵字「${keyword}」搜尋完成，共 ${currentLeadResults.length} 筆（類別：${
+          matchedCategories.length ? matchedCategories.join('、') : '未指定，已啟用全庫模糊比對'
+        }）。`;
       }
 
       function onExportCSV() {
         if (!currentLeadResults.length) return;
-        const header = ['廠商名稱', '應用場景', '官方網站', '聯絡 Mail'];
+        const header = ['廠商名稱', '產業類別', '應用場景', '官方網站', '聯絡 Mail'];
         const rows = currentLeadResults.map((item) => [
           item.companyName,
+          item.industryCategory,
           item.application,
           item.website,
           item.email,
